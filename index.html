@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vedabase en Español — Biblioteca de Śrīla Prabhupāda</title>
+  <style>
+    :root {
+      --gold: #f5c842;
+      --gold-dim: #c4a265;
+      --gold-ghost: #f5c84218;
+      --bg: #0b0b14;
+      --surface: #13131f;
+      --surface-hover: #191930;
+      --border: #1f1f35;
+      --text: #e0d6c8;
+      --text-dim: #8a8070;
+      --text-muted: #5a5040;
+      --radius: 10px;
+      --accent-green: #4ade80;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(160deg, #0d1117 0%, #111827 40%, #1a1040 100%);
+      text-align: center;
+      padding: 4rem 1.5rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 2.6rem;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+    .hero h2 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--gold-dim);
+      margin-bottom: 0.6rem;
+    }
+    .hero .author {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+    }
+    .hero .stats {
+      margin-top: 1.2rem;
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .hero .stat {
+      text-align: center;
+    }
+    .hero .stat-num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+      line-height: 1.2;
+    }
+    .hero .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Search */
+    .search-bar {
+      background: rgba(11,11,20,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.8rem 1rem;
+      display: flex;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .search-input {
+      width: 100%;
+      max-width: 500px;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: var(--gold-dim); }
+
+    /* Sections */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+    .container + .container { border-top: 1px solid var(--border); }
+
+    /* Category header */
+    .category-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+    .category-header h2 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+    }
+    .category-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Book grid */
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .book-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .book-card:hover {
+      border-color: #f5c84244;
+      background: var(--surface-hover);
+      transform: translateY(-2px);
+    }
+    .book-title {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.05rem;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .book-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .book-words {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .book-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .book-badge.text {
+      background: #4ade8012;
+      color: var(--accent-green);
+      border: 1px solid #4ade8025;
+    }
+    .book-badge.audio {
+      background: #f5c84212;
+      color: var(--gold);
+      border: 1px solid #f5c84225;
+    }
+
+    /* Featured — Bhagavad-gita */
+    .featured-book {
+      background: linear-gradient(135deg, var(--surface) 0%, #161630 100%);
+      border: 1px solid var(--gold-ghost);
+      border-radius: 14px;
+      padding: 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s;
+    }
+    .featured-book:hover { border-color: #f5c84244; }
+    .featured-book::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at center, #f5c84208 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .featured-book-info {
+      position: relative;
+      flex: 1;
+    }
+    .featured-book-info h3 {
+      font-family: Georgia, 'Times New Roman', serif;
+      color: var(--gold);
+      font-size: 1.3rem;
+      margin-bottom: 0.3rem;
+    }
+    .featured-book-info p {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+    .featured-badges {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    /* Book reader (individual book view) */
+    .book-reader {
+      display: none;
+    }
+    .book-reader.active {
+      display: block;
+    }
+    .reader-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .back-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+    .reader-title {
+      font-family: Georgia, 'Times New Roman', serif;
+      color: var(--gold);
+      font-size: 1.3rem;
+    }
+    .reader-content {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--text);
+    }
+    .reader-content p {
+      margin-bottom: 1.2rem;
+    }
+    .reader-content h1, .reader-content h2, .reader-content h3 {
+      color: var(--gold);
+      margin: 2rem 0 1rem;
+    }
+    .reader-content h1 { font-size: 1.5rem; }
+    .reader-content h2 { font-size: 1.25rem; }
+    .reader-content h3 { font-size: 1.1rem; color: var(--gold-dim); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 1rem;
+      border-top: 1px solid var(--border);
+    }
+    footer .mantra {
+      font-family: Georgia, 'Times New Roman', serif;
+      color: var(--gold-dim);
+      font-style: italic;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+    footer p {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    footer a {
+      color: var(--gold-dim);
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--gold); }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 3rem 1rem 2rem; }
+      .hero h1 { font-size: 1.8rem; }
+      .hero .stats { gap: 1.5rem; }
+      .container { padding: 2rem 1rem; }
+      .book-grid { grid-template-columns: 1fr; }
+      .featured-book { flex-direction: column; text-align: center; }
+      .featured-badges { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LIBRARY VIEW -->
+  <div id="library-view">
+
+    <div class="hero">
+      <h1>Vedabase en Español</h1>
+      <h2>Biblioteca de Śrīla Prabhupāda — Traducciones originales</h2>
+      <p class="author">Su Divina Gracia A.C. Bhaktivedanta Swami Prabhupāda</p>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-num">22</span>
+          <span class="stat-label">Libros</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">1.2M</span>
+          <span class="stat-label">Palabras</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">100%</span>
+          <span class="stat-label">Traducido</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" class="search-input" id="search" placeholder="Buscar libro..." autocomplete="off">
+    </div>
+
+    <!-- FEATURED: Bhagavad-gita -->
+    <div class="container">
+      <a class="featured-book" href="https://gita-es.vedicvault.org" target="_blank">
+        <div class="featured-book-info">
+          <h3>Bhagavad-gītā Tal Como Es</h3>
+          <p>Edición Original Macmillan 1972 — Audiolibro y texto</p>
+          <div class="featured-badges">
+            <span class="book-badge audio">Audio</span>
+            <span class="book-badge text">Texto</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- ESCRITURAS -->
+    <div class="container" data-category>
+      <div class="category-header">
+        <h2>Escrituras</h2>
+        <span class="category-count">3 libros</span>
+      </div>
+      <div class="book-grid">
+        <a class="book-card" data-book="sri-isopanisad" data-title="Śrī Īśopaniṣad">
+          <div class="book-title">Śrī Īśopaniṣad</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">31.076 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="nectar-of-instruction" data-title="El néctar de la instrucción">
+          <div class="book-title">El néctar de la instrucción</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">22.163 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="light-of-the-bhagavata" data-title="La luz del Bhāgavata">
+          <div class="book-title">La luz del Bhāgavata</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">20.457 palabras</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- SOBRE KṚṢṆA -->
+    <div class="container" data-category>
+      <div class="category-header">
+        <h2>Sobre Kṛṣṇa</h2>
+        <span class="category-count">2 libros</span>
+      </div>
+      <div class="book-grid">
+        <a class="book-card" data-book="krsna-the-supreme-personality-of-godhead" data-title="Kṛṣṇa, la Suprema Personalidad de Dios">
+          <div class="book-title">Kṛṣṇa, la Suprema Personalidad de Dios</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">160.518 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="reservoir-of-pleasure" data-title="El Depósito de Placer">
+          <div class="book-title">El Depósito de Placer</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">4.146 palabras</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ENSEÑANZAS -->
+    <div class="container" data-category>
+      <div class="category-header">
+        <h2>Enseñanzas</h2>
+        <span class="category-count">4 libros</span>
+      </div>
+      <div class="book-grid">
+        <a class="book-card" data-book="teachings-of-lord-caitanya" data-title="Las enseñanzas del Señor Caitanya">
+          <div class="book-title">Las enseñanzas del Señor Caitanya</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">116.341 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="teachings-of-lord-kapila" data-title="Enseñanzas del Señor Kapila">
+          <div class="book-title">Enseñanzas del Señor Kapila</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">89.094 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="teachings-of-queen-kunti" data-title="Enseñanzas de la reina Kuntī">
+          <div class="book-title">Enseñanzas de la reina Kuntī</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">72.425 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="teachings-of-prahlada-maharaja" data-title="Enseñanzas de Prahlāda Mahārāja">
+          <div class="book-title">Enseñanzas de Prahlāda Mahārāja</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">9.182 palabras</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- YOGA Y MEDITACIÓN -->
+    <div class="container" data-category>
+      <div class="category-header">
+        <h2>Yoga y meditación</h2>
+        <span class="category-count">4 libros</span>
+      </div>
+      <div class="book-grid">
+        <a class="book-card" data-book="el-sendero-de-la-perfeccion" data-title="El sendero de la perfección">
+          <div class="book-title">El sendero de la perfección</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">50.295 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="perfection-of-yoga" data-title="La perfección del yoga">
+          <div class="book-title">La perfección del yoga</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">13.703 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="topmost-yoga-system" data-title="El sistema de yoga supremo">
+          <div class="book-title">El sistema de yoga supremo</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">25.045 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="raja-vidya" data-title="Rāja-vidyā: El rey del conocimiento">
+          <div class="book-title">Rāja-vidyā: El rey del conocimiento</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">26.716 palabras</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CONCIENCIA DE KṚṢṆA -->
+    <div class="container" data-category>
+      <div class="category-header">
+        <h2>Conciencia de Kṛṣṇa</h2>
+        <span class="category-count">3 libros</span>
+      </div>
+      <div class="book-grid">
+        <a class="book-card" data-book="elevation-to-krsna-consciousness" data-title="Elevación a la conciencia de Kṛṣṇa">
+          <div class="book-title">Elevación a la conciencia de Kṛṣṇa</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">21.713 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="on-the-way-to-krsna" data-title="En el camino hacia Kṛṣṇa">
+          <div class="book-title">En el camino hacia Kṛṣṇa</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">18.703 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="nectar-of-devotion" data-title="El néctar de la devoción">
+          <div class="book-title">El néctar de la devoción</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">138.819 palabras</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CIENCIA Y FILOSOFÍA -->
+    <div class="container" data-category>
+      <div class="category-header">
+        <h2>Ciencia y filosofía</h2>
+        <span class="category-count">3 libros</span>
+      </div>
+      <div class="book-grid">
+        <a class="book-card" data-book="life-comes-from-life" data-title="La vida proviene de la vida">
+          <div class="book-title">La vida proviene de la vida</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">30.986 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="easy-journey-to-other-planets" data-title="El viaje fácil a otros planetas">
+          <div class="book-title">El viaje fácil a otros planetas</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">20.141 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="beyond-birth-and-death" data-title="Más allá del nacimiento y la muerte">
+          <div class="book-title">Más allá del nacimiento y la muerte</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">13.627 palabras</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CONVERSACIONES Y COMPILACIONES -->
+    <div class="container" data-category>
+      <div class="category-header">
+        <h2>Conversaciones y compilaciones</h2>
+        <span class="category-count">3 libros</span>
+      </div>
+      <div class="book-grid">
+        <a class="book-card" data-book="science-of-self-realization" data-title="La Ciencia de la Auto-realización">
+          <div class="book-title">La Ciencia de la Auto-realización</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">113.888 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="perfect-questions-perfect-answers" data-title="Preguntas perfectas, respuestas perfectas">
+          <div class="book-title">Preguntas perfectas, respuestas perfectas</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">24.623 palabras</span>
+          </div>
+        </a>
+        <a class="book-card" data-book="second-chance" data-title="Una segunda satisfacción">
+          <div class="book-title">Una segunda satisfacción</div>
+          <div class="book-meta">
+            <span class="book-badge text">Texto</span>
+            <span class="book-words">53.377 palabras</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /library-view -->
+
+  <!-- READER VIEW -->
+  <div id="reader-view" class="hidden">
+    <div class="search-bar">
+      <button class="back-btn" id="back-btn">&larr; Biblioteca</button>
+    </div>
+    <div class="container">
+      <h1 class="reader-title" id="reader-title"></h1>
+      <div class="reader-content" id="reader-content"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p class="mantra">Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare / Hare Rāma Hare Rāma Rāma Rāma Hare Hare</p>
+    <p>Bhagavad-gītā As It Is &copy; 1972 Bhaktivedanta Book Trust</p>
+    <p style="margin-top:0.5rem"><a href="https://gita-es.vedicvault.org">Bhagavad-gītā en Español</a></p>
+  </footer>
+
+  <script>
+    // Book data — maps folder name to Spanish .md filename
+    const bookFiles = {
+      'beyond-birth-and-death': 'beyond-birth-and-death/beyond_birth_and_death.md',
+      'easy-journey-to-other-planets': 'easy-journey-to-other-planets/easy_journey_to_other_planets.md',
+      'el-sendero-de-la-perfeccion': 'el-sendero-de-la-perfeccion/el_sendero_de_la_perfeccion.md',
+      'elevation-to-krsna-consciousness': 'elevation-to-krsna-consciousness/elevation_to_krsna_consciousness.md',
+      'krsna-the-supreme-personality-of-godhead': 'krsna-the-supreme-personality-of-godhead/krsna-the-supreme-personality-of-godhead.md',
+      'life-comes-from-life': 'life-comes-from-life/life_comes_from_life.md',
+      'light-of-the-bhagavata': 'light-of-the-bhagavata/light_of_the_bhagavata.md',
+      'nectar-of-devotion': 'nectar-of-devotion/nectar-of-devotion.md',
+      'nectar-of-instruction': 'nectar-of-instruction/nectar_of_instruction.md',
+      'on-the-way-to-krsna': 'on-the-way-to-krsna/on_the_way_to_krsna.md',
+      'perfect-questions-perfect-answers': 'perfect-questions-perfect-answers/perfect_questions_perfect_answers.md',
+      'perfection-of-yoga': 'perfection-of-yoga/perfection_of_yoga.md',
+      'raja-vidya': 'raja-vidya/raja_vidya.md',
+      'reservoir-of-pleasure': 'reservoir-of-pleasure/reservoir_of_pleasure.md',
+      'science-of-self-realization': 'science-of-self-realization/science-of-self-realization.md',
+      'second-chance': 'second-chance/second_chance.md',
+      'sri-isopanisad': 'sri-isopanisad/sri_isopanisad.md',
+      'teachings-of-lord-caitanya': 'teachings-of-lord-caitanya/teachings_of_lord_caitanya.md',
+      'teachings-of-lord-kapila': 'teachings-of-lord-kapila/teachings-of-lord-kapila.md',
+      'teachings-of-prahlada-maharaja': 'teachings-of-prahlada-maharaja/teachings_of_prahlada_maharaja.md',
+      'teachings-of-queen-kunti': 'teachings-of-queen-kunti/teachings_of_queen_kunti.md',
+      'topmost-yoga-system': 'topmost-yoga-system/topmost_yoga_system.md'
+    };
+
+    const BASE_URL = 'books/';
+
+    // Simple markdown to HTML
+    function md2html(md) {
+      return md
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/^={3,}$/gm, '')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\n{2,}/g, '</p><p>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+    }
+
+    // Search
+    document.getElementById('search').addEventListener('input', e => {
+      const q = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      document.querySelectorAll('.book-card').forEach(card => {
+        const title = (card.dataset.title || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        card.style.display = title.includes(q) ? '' : 'none';
+      });
+      // Hide empty categories
+      document.querySelectorAll('[data-category]').forEach(cat => {
+        const visible = cat.querySelectorAll('.book-card:not([style*="display: none"])').length;
+        cat.style.display = visible ? '' : 'none';
+      });
+    });
+
+    // Open book
+    document.querySelectorAll('.book-card').forEach(card => {
+      card.addEventListener('click', async () => {
+        const bookId = card.dataset.book;
+        const title = card.dataset.title;
+        const file = bookFiles[bookId];
+        if (!file) return;
+
+        document.getElementById('reader-title').textContent = title;
+        document.getElementById('reader-content').innerHTML = '<p style="color:var(--text-dim)">Cargando...</p>';
+        document.getElementById('library-view').classList.add('hidden');
+        document.getElementById('reader-view').classList.remove('hidden');
+        window.scrollTo(0, 0);
+
+        try {
+          const res = await fetch(BASE_URL + file);
+          const md = await res.text();
+          document.getElementById('reader-content').innerHTML = md2html(md);
+        } catch (err) {
+          document.getElementById('reader-content').innerHTML = '<p style="color:#e57373">Error al cargar el libro.</p>';
+        }
+      });
+    });
+
+    // Back button
+    document.getElementById('back-btn').addEventListener('click', () => {
+      document.getElementById('reader-view').classList.add('hidden');
+      document.getElementById('library-view').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    });
+  </script>
+
+</body>
+</html>
